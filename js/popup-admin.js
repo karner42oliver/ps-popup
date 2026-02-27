@@ -70,7 +70,7 @@ jQuery(function init_admin() {
 			}
 		}
 
-		jQuery( window ).resize(function() {
+		var handle_resize = function() {
 			var is_small = jQuery( window ).width() <= 850;
 
 			if ( is_small ) {
@@ -83,7 +83,9 @@ jQuery(function init_admin() {
 					remove_sticky();
 				}
 			}
-		}).scroll(function(){
+		};
+
+		var handle_scroll = function() {
 			scroll_top = jQuery( window ).scrollTop() - top_offset + padding;
 
 			if ( scroll_top > 0 ) {
@@ -91,11 +93,12 @@ jQuery(function init_admin() {
 			} else {
 				remove_sticky();
 			}
-		});
+		};
 
-		window.setTimeout( function() {
-			jQuery( window ).trigger( 'scroll' );
-		}, 100 );
+		window.addEventListener( 'resize', handle_resize, { passive: true } );
+		window.addEventListener( 'scroll', handle_scroll, { passive: true } );
+
+		window.setTimeout( handle_scroll, 100 );
 	}
 
 	// Change the text-fields to colorpicker fields.
