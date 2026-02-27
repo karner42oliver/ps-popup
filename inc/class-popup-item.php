@@ -690,6 +690,12 @@ class IncPopupItem {
 
 
 
+		// Display data.
+
+		if ( ! is_array( $this->display_data ) ) { $this->display_data = array(); }
+
+
+
 		// Style.
 
 		if ( ! isset( $styles[ $this->style ] ) ) { $this->style = 'minimal'; } // default style.
