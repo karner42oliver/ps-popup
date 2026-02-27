@@ -1,180 +1,91 @@
 <?php
-
 /*
-Name:        Gerätetyp
-
-Plugin URI:  https://n3rds.work/piestingtal-source-project/ps-popup/
-
-Description: Bedingungen, die Browserdetails überprüfen.
-
-Author:      DerN3rd (PSOURCE)
-
-Author URI:  https://n3rds.work
-
+Name:        Browser type
+Plugin URI:  http://premium.wpmudev.org/project/the-pop-over-plugin/
+Description: Conditions that check browser details.
+Author:      Philipp (Incsub)
+Author URI:  http://premium.wpmudev.org
 Type:        Rule
-
-Rules:       Nur auf Mobilgeräten, nicht auf Mobilgeräten
-
+Rules:       Only on mobile devices, Not on mobile devices
 Version:     1.0
 
-
-
 NOTE: DON'T RENAME THIS FILE!!
-
 This filename is saved as metadata with each popup that uses these rules.
-
 Renaming the file will DISABLE the rules, which is very bad!
-
 */
-
-
 
 class IncPopupRule_Browser extends IncPopupRule {
 
-
-
 	/**
-
 	 * Initialize the rule object.
-
 	 *
-
-	 * @since  1.6
-
+	 * @since  4.6
 	 */
-
 	protected function init() {
-
 		$this->filename = basename( __FILE__ );
 
-
-
 		// 'mobile' rule.
-
 		$this->add_rule(
-
 			'mobile',
-
-			__( 'Nur auf mobilen Geräten', 'popover' ),
-
-			__( 'Zeigt das PopUp Besuchern an, die ein mobiles Gerät (Telefon oder Tablet) verwenden..', 'popover' ),
-
+			__( 'Only on mobile devices', 'popover' ),
+			__( 'Shows the PopUp to visitors that are using a mobile device (Phone or Tablet).', 'popover' ),
 			'no_mobile',
-
 			6
-
 		);
-
-
 
 		// 'no_mobile' rule.
-
 		$this->add_rule(
-
 			'no_mobile',
-
-			__( 'Nicht auf mobilen Geräten', 'popover' ),
-
-			__( 'Zeigt das PopUp Besuchern an, die einen normalen Computer oder Laptop verwenden (d. H. Kein Telefon oder Tablet).', 'popover' ),
-
+			__( 'Not on mobile devices', 'popover' ),
+			__( 'Shows the PopUp to visitors that are using a normal computer or laptop (i.e. not a Phone or Tablet).', 'popover' ),
 			'mobile',
-
 			6
-
 		);
-
 	}
-
-
-
 
 
 	/*============================*\
-
 	================================
-
 	==                            ==
-
 	==           MOBILE           ==
-
 	==                            ==
-
 	================================
-
 	\*============================*/
 
 
-
-
-
 	/**
-
 	 * Apply the rule-logic to the specified popup
-
 	 *
-
-	 * @since  1.6
-
+	 * @since  4.6
 	 * @param  mixed $data Rule-data which was saved via the save_() handler.
-
 	 * @return bool Decission to display popup or not.
-
 	 */
-
 	protected function apply_mobile( $data ) {
-
 		return wp_is_mobile();
-
 	}
-
-
-
 
 
 	/*===============================*\
-
 	===================================
-
 	==                               ==
-
 	==           NO_MOBILE           ==
-
 	==                               ==
-
 	===================================
-
 	\*===============================*/
 
 
-
-
-
 	/**
-
 	 * Apply the rule-logic to the specified popup
-
 	 *
-
-	 * @since  1.6
-
+	 * @since  4.6
 	 * @param  mixed $data Rule-data which was saved via the save_() handler.
-
 	 * @return bool Decission to display popup or not.
-
 	 */
-
 	protected function apply_no_mobile( $data ) {
-
 		return ! wp_is_mobile();
-
 	}
 
 
-
-
-
 };
-
-
 
 IncPopupRules::register( 'IncPopupRule_Browser' );

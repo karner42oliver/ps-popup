@@ -1,43 +1,45 @@
 <?php
-
 /*
-Name:        PS Bloghosting
-Plugin URI:  https://n3rds.work/piestingtal-source-project/ps-bloghosting/
-Description: Bedingungen basierend auf den Details der PS Bloghosting Seiten (nur für Global PopUps verfügbar). <a href="https://n3rds.work/piestingtal-source-project/ps-bloghosting/" target="_blank">Mehr über PS Bloghosting &raquo;</a>
-Author:      DerN3rd (PSOURCE)
-Author URI:  https://n3rds.work
+Name:        Pro Sites
+Plugin URI:  http://premium.wpmudev.org/project/the-pop-over-plugin/
+Description: Conditions based on the blogs Pro Sites details (only available for Global PopUps). <a href="http://premium.wpmudev.org/project/pro-sites/" target="_blank">Learn more &raquo;</a>
+Author:      Philipp (Incsub)
+Author URI:  http://premium.wpmudev.org
 Type:        Rule
-Rules:       Seite ist keine Bloghosting Pro Seite
+Rules:       Site is not a Pro Site
 Limit:       global, pro
-Version:     1.1
+Version:     1.0
 
-HINWEIS: DIESE DATEI NICHT UMBENENNEN!!
-Dieser Dateiname wird als Metadaten bei jedem Popup gespeichert, das diese Regeln verwendet.
-Durch das Umbenennen der Datei werden die Regeln deaktiviert, was sehr schlecht ist!
+NOTE: DON'T RENAME THIS FILE!!
+This filename is saved as metadata with each popup that uses these rules.
+Renaming the file will DISABLE the rules, which is very bad!
 */
+
 
 class IncPopupRule_Prosite extends IncPopupRule {
 
-	public $is_active;
 	/**
-	 * Initialisiert das Regelobjekt.
+	 * Initialize the rule object.
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 */
 	protected function init() {
-
 		$this->filename = basename( __FILE__ );
+
 		// 'no_prosite' rule.
 		$this->add_rule(
 			'no_prosite',
-			__( 'Seite ist keine Bloghosting Pro Seite', 'popover' ),
-			__( 'Zeigt das PopUp an, wenn die Seite keine Bloghosting Pro-Seite ist.', 'popover' ),
+			__( 'Site is not a Pro Site', 'popover' ),
+			__( 'Shows the PopUp if the site is not a Pro Site.', 'popover' ),
 			'',
 			20
 		);
+
 		// -- Initialize rule.
+
 		$this->is_active = function_exists( 'is_pro_site' );
 	}
+
 
 	/*================================*\
 	====================================
@@ -47,12 +49,13 @@ class IncPopupRule_Prosite extends IncPopupRule {
 	====================================
 	\*================================*/
 
+
 	/**
-	 * Wende die Regellogik auf das angegebene Popup an
+	 * Apply the rule-logic to the specified popup
 	 *
-	 * @since  1.6
-	 * @param  mixed $data Regeldaten, die über den save_()-Handler gespeichert wurden.
-	 * @return bool Entscheidung, ob ein Popup angezeigt werden soll oder nicht.
+	 * @since  4.6
+	 * @param  mixed $data Rule-data which was saved via the save_() handler.
+	 * @return bool Decission to display popup or not.
 	 */
 	protected function apply_no_prosite( $data ) {
 		$prosite = function_exists( 'is_pro_site' ) && is_pro_site();
@@ -60,17 +63,17 @@ class IncPopupRule_Prosite extends IncPopupRule {
 	}
 
 	/**
-	 * Gibt das Admin-Formular für die aktive Regel aus.
+	 * Output the Admin-Form for the active rule.
 	 *
-	 * @since  1.6
-	 * @param  mixed $data Regeldaten, die über den save_()-Handler gespeichert wurden.
+	 * @since  4.6
+	 * @param  mixed $data Rule-data which was saved via the save_() handler.
 	 */
 	protected function form_no_prosite( $data ) {
-
 		if ( ! $this->is_active ) {
 			$this->render_plugin_inactive();
 		}
 	}
+
 
 	/*======================================*\
 	==========================================
@@ -80,8 +83,9 @@ class IncPopupRule_Prosite extends IncPopupRule {
 	==========================================
 	\*======================================*/
 
+
 	/**
-	 * Zeigt eine Warnmeldung an, falls das Mitgliedschafts-Plugin nicht aktiv ist.
+	 * Displays a warning message in case the Membership plugin is not active.
 	 *
 	 * @since  1.0.0
 	 */
@@ -90,10 +94,10 @@ class IncPopupRule_Prosite extends IncPopupRule {
 		<div class="error below-h2"><p>
 			<?php printf(
 				__(
-					'Diese Bedingung erfordert, dass das <a href="%s" target="_blank">' .
-					'PS Bloghosting Plugin </a> installiert und aktiviert ist.', 'popover'
+					'This condition requires that the <a href="%s" target="_blank">' .
+					'Pro Sites Plugin</a> is installed and activated.', 'popover'
 				),
-				'https://n3rds.work/piestingtal-source-project/ps-bloghosting/'
+				'http://premium.wpmudev.org/project/pro-sites/'
 			);?>
 		</p></div>
 		<?php
@@ -101,4 +105,3 @@ class IncPopupRule_Prosite extends IncPopupRule {
 };
 
 IncPopupRules::register( 'IncPopupRule_Prosite' );
-

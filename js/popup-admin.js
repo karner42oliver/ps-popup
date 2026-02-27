@@ -1,6 +1,6 @@
-/*! PopUp - v4.8.0
- * https://n3rds.work/piestingtal-source-project/ps-popup/
- * Copyright (c) 2016; * Licensed GPLv2+ */
+/*! PopUp - v4.8.01
+ * http://premium.wpmudev.org/project/the-pop-over-plugin/
+ * Copyright (c) 2017; * Licensed GPLv2+ */
 /*global window:false */
 /*global document:false */
 /*global wp:false */
@@ -21,6 +21,10 @@ jQuery(function init_admin() {
 			handles = jQuery( '.postbox .hndle' );
 
 		if ( ! boxes.length ) { return; }
+
+		boxes.sortable({
+			disabled: true
+		});
 		handles.css( 'cursor', 'pointer' );
 	}
 
@@ -70,7 +74,7 @@ jQuery(function init_admin() {
 			}
 		}
 
-		var handle_resize = function() {
+		jQuery( window ).resize(function() {
 			var is_small = jQuery( window ).width() <= 850;
 
 			if ( is_small ) {
@@ -83,9 +87,7 @@ jQuery(function init_admin() {
 					remove_sticky();
 				}
 			}
-		};
-
-		var handle_scroll = function() {
+		}).scroll(function(){
 			scroll_top = jQuery( window ).scrollTop() - top_offset + padding;
 
 			if ( scroll_top > 0 ) {
@@ -93,12 +95,11 @@ jQuery(function init_admin() {
 			} else {
 				remove_sticky();
 			}
-		};
+		});
 
-		window.addEventListener( 'resize', handle_resize, { passive: true } );
-		window.addEventListener( 'scroll', handle_scroll, { passive: true } );
-
-		window.setTimeout( handle_scroll, 100 );
+		window.setTimeout( function() {
+			jQuery( window ).trigger( 'scroll' );
+		}, 100 );
 	}
 
 	// Change the text-fields to colorpicker fields.
@@ -194,50 +195,27 @@ jQuery(function init_admin() {
 		};
 
 		var create_sliders = function create_sliders() {
-			jQuery( '.range-slider' ).each(function() {
-				var slider = jQuery( this ),
-					wrap = slider.closest( '.slider-wrap' ),
-					inp_base = slider.data( 'input' ),
+			jQuery( '.slider' ).each(function() {
+				var me = jQuery( this ),
+					wrap = me.closest( '.slider-wrap' ),
+					inp_base = me.data( 'input' ),
 					inp_min = wrap.find( inp_base + 'min' ),
 					inp_max = wrap.find( inp_base + 'max' ),
 					min_input = wrap.find( '.slider-min-input' ),
 					min_ignore = wrap.find( '.slider-min-ignore' ),
 					max_input = wrap.find( '.slider-max-input' ),
 					max_ignore = wrap.find( '.slider-max-ignore' ),
-					range_min = slider.find( '.range-min' ),
-					range_max = slider.find( '.range-max' ),
-					min = parseInt( slider.data( 'min' ), 10 ),
-					max = parseInt( slider.data( 'max' ), 10 );
+					min = me.data( 'min' ),
+					max = me.data( 'max' );
 
 				if ( isNaN( min ) ) { min = 0; }
 				if ( isNaN( max ) ) { max = 9999; }
 				inp_min.prop( 'readonly', true );
 				inp_max.prop( 'readonly', true );
 
-				range_min.attr({
-					min: min,
-					max: max
-				});
-				range_max.attr({
-					min: min,
-					max: max
-				});
-
-				var set_track = function set_track( val1, val2 ) {
-					var span = max - min,
-						min_percent = span ? ( ( val1 - min ) / span ) * 100 : 0,
-						max_percent = span ? ( ( val2 - min ) / span ) * 100 : 100;
-
-					slider[0].style.setProperty( '--range-min', min_percent + '%' );
-					slider[0].style.setProperty( '--range-max', max_percent + '%' );
-				};
-
 				var update_fields = function update_fields( val1, val2 ) {
 					inp_min.val( val1 );
 					inp_max.val( val2 );
-					range_min.val( val1 );
-					range_max.val( val2 );
-					set_track( val1, val2 );
 
 					if ( val1 === min ) {
 						min_input.hide();
@@ -255,42 +233,25 @@ jQuery(function init_admin() {
 					}
 				};
 
-				var clamp_values = function clamp_values( source ) {
-					var val1 = parseInt( range_min.val(), 10 ),
-						val2 = parseInt( range_max.val(), 10 );
-
-					if ( isNaN( val1 ) ) { val1 = min; }
-					if ( isNaN( val2 ) ) { val2 = max; }
-					val1 = Math.max( min, Math.min( max, val1 ) );
-					val2 = Math.max( min, Math.min( max, val2 ) );
-
-					if ( val1 > val2 ) {
-						if ( source === 'min' ) {
-							val2 = val1;
-						} else {
-							val1 = val2;
-						}
+				me.slider({
+					range: true,
+					min: min,
+					max: max,
+					values: [ inp_min.val(), inp_max.val() ],
+					slide: function( event, ui ) {
+						update_fields( ui.values[0], ui.values[1] );
 					}
+				});
 
-					update_fields( val1, val2 );
-				};
-
-				range_min.on( 'input change', function() {
-					clamp_values( 'min' );
-				} );
-				range_max.on( 'input change', function() {
-					clamp_values( 'max' );
-				} );
-
-				update_fields( parseInt( inp_min.val(), 10 ) || min, parseInt( inp_max.val(), 10 ) || max );
+				update_fields( inp_min.val(), inp_max.val() );
 			});
 		};
 
-		chk_colors.on("click", toggle_section );
-		chk_size.on("click", toggle_section );
-		chk_can_hide.on("click", toggle_section );
-		chk_close_hides.on("click", toggle_section );
-		opt_display.on("click", toggle_section_group );
+		chk_colors.click( toggle_section );
+		chk_size.click( toggle_section );
+		chk_can_hide.click( toggle_section );
+		chk_close_hides.click( toggle_section );
+		opt_display.click( toggle_section_group );
 
 		toggle_section.call( chk_colors );
 		toggle_section.call( chk_size );
@@ -371,8 +332,8 @@ jQuery(function init_admin() {
 			form.toggleClass( 'open' );
 		};
 
-		all_rules.find( 'input.wpmui-toggle-checkbox' ).on("click", toggle_rule );
-		all_rules.find( '.rule' ).on("click", toggle_checkbox );
+		all_rules.find( 'input.wpmui-toggle-checkbox' ).click( toggle_rule );
+		all_rules.find( '.rule' ).click( toggle_checkbox );
 		active_rules.on( 'click', '.rule-title,.rule-toggle', toggle_form );
 
 		// Exclude rules.
@@ -483,7 +444,6 @@ jQuery(function init_admin() {
 			tbody = table.find( '#the-list' );
 
 		if ( ! tbody.length ) { return; }
-		if ( 'undefined' === typeof window.Sortable ) { return; }
 
 		var ajax_done = function ajax_done( resp, okay ) {
 			table.removeClass( 'wpmui-loading' );
@@ -495,24 +455,14 @@ jQuery(function init_admin() {
 			}
 		};
 
-		var get_order = function get_order() {
+		var save_order = function save_order( event, ui ) {
 			var i,
-				rows = tbody.find( 'tr' ),
+				rows = tbody.find('tr'),
 				order = [];
 
-			for ( i = 0; i < rows.length; i += 1 ) {
+			for ( i = 0; i < rows.length; i+= 1 ) {
 				order.push( jQuery( rows[i] ).attr( 'id' ) );
 			}
-
-			return order;
-		};
-
-		var last_order = get_order();
-
-		var save_order = function save_order() {
-			var order = get_order();
-			if ( order.join( ',' ) === last_order.join( ',' ) ) { return; }
-			last_order = order.slice( 0 );
 
 			table.addClass( 'wpmui-loading' );
 			wpmUi.ajax( null, 'po-ajax' )
@@ -524,12 +474,15 @@ jQuery(function init_admin() {
 				.load_json();
 		};
 
-		window.Sortable.create( tbody[0], {
+		tbody.sortable({
+			placeholder: 'ui-sortable-placeholder',
+			axis: 'y',
 			handle: '.column-po_order',
-			placeholderClass: 'ui-sortable-placeholder',
-			dragClass: 'ui-sortable-helper',
-			onEnd: save_order
-		} );
+			helper: 'clone',
+			opacity: 0.75,
+			update: save_order
+		});
+		tbody.disableSelection();
 	}
 
 	// Shows a preview of the current PopUp.
@@ -545,7 +498,7 @@ jQuery(function init_admin() {
 			if ( undefined === window.inc_popup ) { return false; }
 
 			body.addClass( 'wpmui-loading' );
-			window.inc_popup.on("load",  po_id );
+			window.inc_popup.load( po_id );
 			return false;
 		};
 
@@ -561,7 +514,7 @@ jQuery(function init_admin() {
 			data = ajax.extract_data( form );
 			body.addClass( 'wpmui-loading' );
 
-			window.inc_popup.on("load",  0, data );
+			window.inc_popup.load( 0, data );
 			return false;
 		};
 

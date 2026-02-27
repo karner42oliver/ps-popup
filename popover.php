@@ -1,22 +1,24 @@
 <?php
+/**
+ * Plugin Name: PopUp Pro
+ * Plugin URI:  http://premium.wpmudev.org/project/the-pop-over-plugin/
+ * Description: Allows you to display a fancy PopUp to visitors sitewide or per blog. A *very* effective way of  * advertising a mailing list, special offer or running a plain old ad.
+ * Version:     4.8.1
+ * Author:      WPMU DEV
+ * Author URI:  http://premium.wpmudev.org
+ * Textdomain:  popover
+ * WDP ID:      123
+ */
+
 
 /**
- * Plugin Name: PS Popup
- * Plugin URI:  https://cp-psource.github.io/ps-popup/
- * Description: Ermöglicht es Besuchern auf der ganzen Webseite ein ausgefallenes PopUp anzuzeigen. Eine *sehr* effektive Art, eine Mailingliste, ein Sonderangebot oder eine einfache alte Anzeige zu bewerben.
- * Version:     1.8.4
- * Author:      PSOURCE
- * Author URI:  https://github.com/cp-psource
- * Textdomain:  popover
- * Domain Path: lang
- */
 
 /**
  * Copyright notice
  *
- * @copyright PSOURCE (https://github.com/cp-psource)
+ * @copyright Incsub (http://incsub.com/)
  *
- * Authors: DerN3rd, Philipp Stracker, Fabio Jun Onishi, Victor Ivanov, Jack Kitterhing, Rheinard Korf, Ashok Kumar Nath
+ * Authors: Philipp Stracker, Fabio Jun Onishi, Victor Ivanov, Jack Kitterhing, Rheinard Korf, Ashok Kumar Nath
  * Contributors: Joji Mori, Patrick Cohen
  *
  * @license http://opensource.org/licenses/GPL-2.0 GNU General Public License, version 2 (GPL-2.0)
@@ -36,19 +38,6 @@
  * MA 02110-1301 USA
  */
 
-require 'psource/psource-plugin-update/plugin-update-checker.php';
-use YahnisElsts\PluginUpdateChecker\v5\PucFactory;
- 
-$myUpdateChecker = PucFactory::buildUpdateChecker(
-	'https://github.com/cp-psource/ps-popup',
-	__FILE__,
-	'ps-popup'
-);
- 
-//Set the branch that contains the stable release.
-$myUpdateChecker->setBranch('master');
-
-
 function inc_popup_init() {
 	// Check if the PRO plugin is present and activated.
 	if ( defined( 'PO_VERSION' ) ) {
@@ -60,7 +49,7 @@ function inc_popup_init() {
 		,'pro'
 
 	);
-	
+
 	/**
 	 * The current DB/build version. NOT THE SAME AS THE PLUGIN VERSION!
 	 * Increase this when DB structure changes, migration code is required, etc.
@@ -87,7 +76,7 @@ function inc_popup_init() {
 
 	// Include function library.
 	$modules[] = PO_INC_DIR . 'external/wpmu-lib/core.php';
-	//$modules[] = PO_INC_DIR . 'external/wdev-frash/module.php';
+	$modules[] = PO_INC_DIR . 'external/wdev-frash/module.php';
 	$modules[] = PO_INC_DIR . 'config-defaults.php';
 
 	if ( is_admin() ) {
@@ -104,12 +93,34 @@ function inc_popup_init() {
 	// Pro-Only configuration.
 	$cta_label = false;
 	$drip_param = false;
-	$modules[] = PO_INC_DIR . 'external/psource-dash/psource-dash-board.php';
+	$modules[] = PO_INC_DIR . 'external/wpmudev-dashboard/wpmudev-dash-notification.php';
+
+	// WPMUDEV Dashboard.
+	global $wpmudev_notices;
+	$wpmudev_notices[] = array(
+		'id' => 123,
+		'name' => 'PopUp Pro',
+		'screens' => array(
+			'edit-inc_popup',
+			'inc_popup',
+			'inc_popup_page_settings',
+		),
+	);
 
 
 	foreach ( $modules as $path ) {
 		if ( file_exists( $path ) ) { require_once $path; }
 	}
+
+	// Register the current plugin, for pro and free plugins!
+	do_action(
+		'wdev-register-plugin',
+		/*             Plugin ID */ plugin_basename( __FILE__ ),
+		/*          Plugin Title */ 'PopUp',
+		/* https://wordpress.org */ '/plugins/wordpress-popup/',
+		/*      Email Button CTA */ $cta_label,
+		/*  getdrip Plugin param */ $drip_param
+	);
 
 	// Initialize the plugin as soon as we have identified the current user.
 	IncPopup::instance();

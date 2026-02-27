@@ -1,55 +1,53 @@
 <?php
-
 /*
-Name:        Beitragskategorien
-Plugin URI:  https://n3rds.work/piestingtal-source-project/ps-popup/
-Description: Fügt Regeln für Beitragskategorien hinzu.
-Author:      DerN3rd (PSOURCE)
-Author URI:  https://n3rds.work
+Name:        Post Categories
+Plugin URI:  http://premium.wpmudev.org/project/the-pop-over-plugin/
+Description: Adds post category related rules.
+Author:      Ve (Incsub)
+Author URI:  http://premium.wpmudev.org
 Type:        Rule
-Rules:       In der Post-Kategorie, nicht in der Post-Kategorie
+Rules:       On post category, Not on post category
 Limit:       no global, pro
-Version:     1.1
+Version:     1.0
 
-HINWEIS: DIESE DATEI NICHT UMBENENNEN!!
-Dieser Dateiname wird als Metadaten bei jedem Popup gespeichert, das diese Regeln verwendet.
-Durch das Umbenennen der Datei werden die Regeln deaktiviert, was sehr schlecht ist!
+NOTE: DON'T RENAME THIS FILE!!
+This filename is saved as metadata with each popup that uses these rules.
+Renaming the file will DISABLE the rules, which is very bad!
 */
+
 
 class IncPopupRule_Category extends IncPopupRule {
 
-	public $categories;
-	public $url_types;
-
 	/**
-	 * Initialisiert das Regelobjekt.
+	 * Initialize the rule object.
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 */
 	protected function init() {
 		$this->filename = basename( __FILE__ );
 
 		if ( IncPopup::use_global() ) { return; }
 
-		// 'category'-Regel.
+		// 'category' rule.
 		$this->add_rule(
 			'category',
-			__( 'Auf Beitragskategorie', 'popover' ),
-			__( 'Zeigt das PopUp auf Seiten an, die einer der angegebenen Kategorien entsprechen.', 'popover' ),
+			__( 'On post category', 'popover' ),
+			__( 'Shows the PopUp on pages that match any of the specified categories.', 'popover' ),
 			'no_category',
 			30
 		);
 
-		// 'no_category'-Regel.
+		// 'no_category' rule.
 		$this->add_rule(
 			'no_category',
-			__( 'Nicht in Beitragskategorie', 'popover' ),
-			__( 'Zeigt das PopUp auf Seiten an, die keiner der angegebenen Kategorien entsprechen.', 'popover' ),
+			__( 'Not on post category', 'popover' ),
+			__( 'Shows the PopUp on pages that do not match any of the specified categories.', 'popover' ),
 			'category',
 			30
 		);
 
-		// -- Initialize -Regel.
+		// -- Initialize rule.
+
 		add_filter(
 			'popup-ajax-data',
 			array( $this, 'inject_ajax_category' )
@@ -65,15 +63,15 @@ class IncPopupRule_Category extends IncPopupRule {
 
 		$this->url_types = array(
 			'singular' => __( 'Singular', 'popover' ),
-			'plural'   => __( 'Archiv', 'popover' ),
+			'plural'   => __( 'Archive', 'popover' ),
 		);
 	}
 
 	/**
-	 * Fügt Kategoriedetails in die Ajax-Datensammlung ein.
-	 * (Erforderlich für jede Ajax-Lademethode)
+	 * Injects category details into the ajax-data collection.
+	 * (Required for any ajax loading method)
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 */
 	public function inject_ajax_category( $data ) {
 		$categories = json_encode( wp_list_pluck( get_the_category(), 'term_id' ) );
@@ -82,12 +80,12 @@ class IncPopupRule_Category extends IncPopupRule {
 		if ( ! is_array( @$data['ajax_data'] ) ) {
 			$data['ajax_data'] = array();
 		}
-
 		$data['ajax_data']['categories'] = $categories;
 		$data['ajax_data']['is_single'] = $is_singular;
 
 		return $data;
 	}
+
 
 	/*==============================*\
 	==================================
@@ -97,10 +95,11 @@ class IncPopupRule_Category extends IncPopupRule {
 	==================================
 	\*==============================*/
 
+
 	/**
 	 * Apply the rule-logic to the specified popup
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 * @param  mixed $data Rule-data which was saved via the save_() handler.
 	 * @return bool Decission to display popup or not.
 	 */
@@ -113,15 +112,14 @@ class IncPopupRule_Category extends IncPopupRule {
 	/**
 	 * Output the Admin-Form for the active rule.
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 * @param  mixed $data Rule-data which was saved via the save_() handler.
 	 */
-
 	protected function form_category( $data ) {
 		$this->render_form(
 			'category',
-			__( 'In diesen Beitragskategorien anzeigen:', 'popover' ),
-			__( 'Auf diesen Kategorietypen URLs anzeigen:', 'popover' ),
+			__( 'Show on these post categories:', 'popover' ),
+			__( 'Show on these category type URLs:', 'popover' ),
 			$data
 		);
 	}
@@ -129,7 +127,7 @@ class IncPopupRule_Category extends IncPopupRule {
 	/**
 	 * Update and return the $settings array to save the form values.
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 * @param  array $data The contents of $_POST['po_rule_data'].
 	 * @return mixed Data collection of this rule.
 	 */
@@ -137,6 +135,7 @@ class IncPopupRule_Category extends IncPopupRule {
 		lib3()->array->equip( $data, 'category' );
 		return $data['category'];
 	}
+
 
 	/*=================================*\
 	=====================================
@@ -146,14 +145,14 @@ class IncPopupRule_Category extends IncPopupRule {
 	=====================================
 	\*=================================*/
 
+
 	/**
 	 * Apply the rule-logic to the specified popup
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 * @param  mixed $data Rule-data which was saved via the save_() handler.
 	 * @return bool Decission to display popup or not.
 	 */
-
 	protected function apply_no_category( $data ) {
 		if ( ! is_array( $data ) ) { $data = array(); }
 
@@ -163,15 +162,14 @@ class IncPopupRule_Category extends IncPopupRule {
 	/**
 	 * Output the Admin-Form for the active rule.
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 * @param  mixed $data Rule-data which was saved via the save_() handler.
 	 */
-
 	protected function form_no_category( $data ) {
 		$this->render_form(
 			'no_category',
-			__( 'Verstecke in diesen Beitragskategorien:', 'popover' ),
-			__( 'Verstecke in diesen Kategorietyp URLs:', 'popover' ),
+			__( 'Hide on these post categories:', 'popover' ),
+			__( 'Hide on these category type URLs:', 'popover' ),
 			$data
 		);
 	}
@@ -179,7 +177,7 @@ class IncPopupRule_Category extends IncPopupRule {
 	/**
 	 * Update and return the $settings array to save the form values.
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 * @param  array $data The contents of $_POST['po_rule_data'].
 	 * @return mixed Data collection of this rule.
 	 */
@@ -188,6 +186,7 @@ class IncPopupRule_Category extends IncPopupRule {
 		return $data['no_category'];
 	}
 
+
 	/*======================================*\
 	==========================================
 	==                                      ==
@@ -195,6 +194,7 @@ class IncPopupRule_Category extends IncPopupRule {
 	==                                      ==
 	==========================================
 	\*======================================*/
+
 
 	/**
 	 * Renders the category options-form
@@ -205,9 +205,7 @@ class IncPopupRule_Category extends IncPopupRule {
 	 * @param  string $label_urls
 	 * @param  array $data
 	 */
-
 	protected function render_form( $name, $label_category, $label_urls, $data ) {
-
 		if ( ! is_array( $data ) ) { $data = array(); }
 		if ( ! is_array( @$data['categories'] ) ) { $data['categories'] = array(); }
 		if ( ! is_array( @$data['urls'] ) ) { $data['urls'] = array(); }
@@ -243,17 +241,14 @@ class IncPopupRule_Category extends IncPopupRule {
 	/**
 	 * Tests if the $test_url matches any pattern defined in the $list.
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 * @param  string $posttype
 	 * @param  array $url_types
 	 * @return bool
 	 */
-
 	protected function check_category( $categories, $url_types ) {
-
 		global $post;
 		$response = false;
-
 		if ( ! is_array( $categories ) ) { $categories = array(); }
 		if ( ! is_array( $url_types ) ) { $url_types = array(); }
 
@@ -290,9 +285,9 @@ class IncPopupRule_Category extends IncPopupRule {
 				}
 			}
 		}
+
 		return $response;
 	}
 };
 
 IncPopupRules::register( 'IncPopupRule_Category' );
-

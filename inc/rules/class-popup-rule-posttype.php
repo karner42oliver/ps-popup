@@ -1,30 +1,27 @@
 <?php
-
 /*
-Name:        Beitragstypen
-Plugin URI:  https://n3rds.work/piestingtal-source-project/ps-popup/
-Description: Fügt Beitragstypbezogene Regeln hinzu.
-Author:      DerN3rd (PSOURCE)
-Author URI:  https://n3rds.work
+Name:        Post Types
+Plugin URI:  http://premium.wpmudev.org/project/the-pop-over-plugin/
+Description: Adds post type-related rules.
+Author:      Ve (Incsub)
+Author URI:  http://premium.wpmudev.org
 Type:        Rule
-Rules:       Für bestimmte Beitragstypen, Nicht für bestimmte Beitragstypen
+Rules:       For specific Post Types, Not for specific Post Types
 Limit:       no global, pro
-Version:     1.1
+Version:     1.0
 
-HINWEIS: DIESE DATEI NICHT UMBENENNEN!!
-Dieser Dateiname wird als Metadaten bei jedem Popup gespeichert, das diese Regeln verwendet.
-Durch das Umbenennen der Datei werden die Regeln deaktiviert, was sehr schlecht ist!
+NOTE: DON'T RENAME THIS FILE!!
+This filename is saved as metadata with each popup that uses these rules.
+Renaming the file will DISABLE the rules, which is very bad!
 */
 
-class IncPopupRule_Posttype extends IncPopupRule {
 
-	public $posttypes;
-	public $url_types;
+class IncPopupRule_Posttype extends IncPopupRule {
 
 	/**
 	 * Initialize the rule object.
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 */
 	protected function init() {
 		$this->filename = basename( __FILE__ );
@@ -34,8 +31,8 @@ class IncPopupRule_Posttype extends IncPopupRule {
 		// 'posttype' rule.
 		$this->add_rule(
 			'posttype',
-			__( 'Für bestimmte Beitragstypen', 'popover' ),
-			__( 'Zeigt das PopUp auf Seiten an, die einem der angegebenen Beitragstypen entsprechen.', 'popover' ),
+			__( 'For specific Post Types', 'popover' ),
+			__( 'Shows the PopUp on pages that match any of the specified Post Types.', 'popover' ),
 			'no_posttype',
 			30
 		);
@@ -43,13 +40,14 @@ class IncPopupRule_Posttype extends IncPopupRule {
 		// 'no_posttype' rule.
 		$this->add_rule(
 			'no_posttype',
-			__( 'Nicht für bestimmte Beitragstypen', 'popover' ),
-			__( 'Zeigt das PopUp auf Seiten an, die keinem der angegebenen Beitragstypen entsprechen.', 'popover' ),
+			__( 'Not for specific Post Types', 'popover' ),
+			__( 'Shows the PopUp on pages that do not match any of the specified Post Type.', 'popover' ),
 			'posttype',
 			30
 		);
 
 		// -- Initialize rule.
+
 		add_filter(
 			'popup-ajax-data',
 			array( $this, 'inject_ajax_posttype' )
@@ -64,7 +62,7 @@ class IncPopupRule_Posttype extends IncPopupRule {
 
 		$this->url_types = array(
 			'singular' => __( 'Singular', 'popover' ),
-			'plural'   => __( 'Archiv', 'popover' ),
+			'plural'   => __( 'Archive', 'popover' ),
 		);
 	}
 
@@ -72,7 +70,7 @@ class IncPopupRule_Posttype extends IncPopupRule {
 	 * Injects posttype details into the ajax-data collection.
 	 * (Required for any ajax loading method)
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 */
 	public function inject_ajax_posttype( $data ) {
 		$posttype = get_post_type();
@@ -81,12 +79,12 @@ class IncPopupRule_Posttype extends IncPopupRule {
 		if ( ! is_array( @$data['ajax_data'] ) ) {
 			$data['ajax_data'] = array();
 		}
-
 		$data['ajax_data']['posttype'] = $posttype;
 		$data['ajax_data']['is_single'] = $is_singular;
 
 		return $data;
 	}
+
 
 	/*==============================*\
 	==================================
@@ -96,29 +94,31 @@ class IncPopupRule_Posttype extends IncPopupRule {
 	==================================
 	\*==============================*/
 
+
 	/**
 	 * Apply the rule-logic to the specified popup
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 * @param  mixed $data Rule-data which was saved via the save_() handler.
 	 * @return bool Decission to display popup or not.
 	 */
 	protected function apply_posttype( $data ) {
 		if ( ! is_array( $data ) ) { $data = array(); }
+
 		return $this->check_posttype( @$data['posttypes'], @$data['urls'] );
 	}
 
 	/**
 	 * Output the Admin-Form for the active rule.
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 * @param  mixed $data Rule-data which was saved via the save_() handler.
 	 */
 	protected function form_posttype( $data ) {
 		$this->render_form(
 			'posttype',
-			__( 'Für diese Beitragstypen anzeigen:', 'popover' ),
-			__( 'Auf diesen Beitragstypen-URLs anzeigen:', 'popover' ),
+			__( 'Show for these Post Types:', 'popover' ),
+			__( 'Show on these Post Type URLs:', 'popover' ),
 			$data
 		);
 	}
@@ -126,7 +126,7 @@ class IncPopupRule_Posttype extends IncPopupRule {
 	/**
 	 * Update and return the $settings array to save the form values.
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 * @param  array $data The contents of $_POST['po_rule_data'].
 	 * @return mixed Data collection of this rule.
 	 */
@@ -134,6 +134,7 @@ class IncPopupRule_Posttype extends IncPopupRule {
 		lib3()->array->equip( $data, 'posttype' );
 		return $data['posttype'];
 	}
+
 
 	/*=================================*\
 	=====================================
@@ -143,29 +144,31 @@ class IncPopupRule_Posttype extends IncPopupRule {
 	=====================================
 	\*=================================*/
 
+
 	/**
 	 * Apply the rule-logic to the specified popup
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 * @param  mixed $data Rule-data which was saved via the save_() handler.
 	 * @return bool Decission to display popup or not.
 	 */
 	protected function apply_no_posttype( $data ) {
 		if ( ! is_array( $data ) ) { $data = array(); }
+
 		return ! $this->check_posttype( @$data['posttypes'], @$data['urls'] );
 	}
 
 	/**
 	 * Output the Admin-Form for the active rule.
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 * @param  mixed $data Rule-data which was saved via the save_() handler.
 	 */
 	protected function form_no_posttype( $data ) {
 		$this->render_form(
 			'no_posttype',
-			__( 'Für diese Beitragstypen ausblenden:', 'popover' ),
-			__( 'Verstecken Sie diese Beitragstypen-URLs:', 'popover' ),
+			__( 'Hide for these Post Types:', 'popover' ),
+			__( 'Hide on these Post Type URLs:', 'popover' ),
 			$data
 		);
 	}
@@ -173,15 +176,15 @@ class IncPopupRule_Posttype extends IncPopupRule {
 	/**
 	 * Update and return the $settings array to save the form values.
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 * @param  array $data The contents of $_POST['po_rule_data'].
 	 * @return mixed Data collection of this rule.
 	 */
-
 	protected function save_no_posttype( $data ) {
 		lib3()->array->equip( $data, 'no_posttype' );
 		return $data['no_posttype'];
 	}
+
 
 	/*======================================*\
 	==========================================
@@ -190,6 +193,7 @@ class IncPopupRule_Posttype extends IncPopupRule {
 	==                                      ==
 	==========================================
 	\*======================================*/
+
 
 	/**
 	 * Renders the category options-form
@@ -201,7 +205,6 @@ class IncPopupRule_Posttype extends IncPopupRule {
 	 * @param  array $data
 	 */
 	protected function render_form( $name, $label_posttype, $label_urls, $data ) {
-
 		if ( ! is_array( $data ) ) { $data = array(); }
 		if ( ! is_array( @$data['posttypes'] ) ) { $data['posttypes'] = array(); }
 		if ( ! is_array( @$data['urls'] ) ) { $data['urls'] = array(); }
@@ -237,17 +240,14 @@ class IncPopupRule_Posttype extends IncPopupRule {
 	/**
 	 * Tests if the $test_url matches any pattern defined in the $list.
 	 *
-	 * @since  1.6
+	 * @since  4.6
 	 * @param  string $posttype
 	 * @param  array $url_types
 	 * @return bool
 	 */
 	protected function check_posttype( $posttype, $url_types ) {
-
 		global $post;
-
 		$response = false;
-
 		if ( ! is_array( $posttype ) ) { $posttype = array(); }
 		if ( ! is_array( $url_types ) ) { $url_types = array(); }
 
@@ -274,6 +274,7 @@ class IncPopupRule_Posttype extends IncPopupRule {
 				return in_array( $cur_type, $posttype ); // We have the post type!
 			}
 		}
+
 		return $response;
 	}
 };
